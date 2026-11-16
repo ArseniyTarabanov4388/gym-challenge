@@ -1,0 +1,776 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>100×3 Challenge</title>
+<meta name="description" content="30 уровней до сотки отжиманий, пресса и супермена за один подход">
+<meta name="theme-color" content="#121418">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="100×3">
+<meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<style>
+:root {
+  --bg-main: #121418;
+  --bg-card: #1C2027;
+  --bg-card-alt: #232831;
+  --bg-hover: #2A303C;
+  --bg-passed: #1A2B22;
+  --bg-danger-soft: #2E2023;
+  --accent: #FF6B2B;
+  --accent-press: #E55A1D;
+  --blue: #4F8EF7;
+  --cyan: #32ADE6;
+  --success: #30D158;
+  --warning: #FFD60A;
+  --danger: #FF453A;
+  --text: #F4F6FA;
+  --text-2: #949CA9;
+  --text-muted: #6C727F;
+  --text-disabled: #4A505C;
+  --star-empty: #484F5E;
+  --border: #2E3440;
+  --radius: 14px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; height: 100%; }
+body {
+  background: var(--bg-main);
+  color: var(--text);
+  font-family: -apple-system, "SF Pro Display", "SF Pro Text", system-ui, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior-y: none;
+  -webkit-user-select: none; user-select: none;
+}
+input { -webkit-user-select: text; user-select: text; }
+#app {
+  min-height: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: calc(var(--safe-top) + 16px) 16px calc(var(--safe-bottom) + 24px);
+}
+button {
+  font: inherit; color: inherit; border: 0; cursor: pointer;
+  border-radius: 12px; touch-action: manipulation;
+  transition: transform .08s ease, background-color .15s ease, opacity .15s;
+}
+button:active:not(:disabled) { transform: scale(.97); }
+button:disabled { cursor: default; color: var(--text-disabled); }
+.btn { display: block; width: 100%; padding: 15px 18px; font-size: 17px; font-weight: 700; background: var(--bg-card); }
+.btn:active:not(:disabled) { background: var(--bg-hover); }
+.btn-accent { background: var(--accent); color: #fff; }
+.btn-accent:active:not(:disabled) { background: var(--accent-press); }
+.btn-success { background: var(--success); color: #0B160E; }
+.btn-danger { color: var(--danger); background: var(--bg-danger-soft); }
+.btn-ghost { background: transparent; color: var(--text-2); }
+.btn-small { display: inline-block; width: auto; padding: 9px 14px; font-size: 15px; }
+.muted { color: var(--text-2); }
+.card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); }
+
+/* --- Главное меню --- */
+.menu { min-height: calc(100vh - var(--safe-top) - var(--safe-bottom) - 40px); display: flex; flex-direction: column; justify-content: center; gap: 12px; text-align: center; }
+.menu .kicker { color: var(--accent); font-weight: 700; font-size: 13px; letter-spacing: .04em; }
+.menu h1 { margin: 6px 0 4px; font-size: 34px; line-height: 1.1; }
+.menu .sub { color: var(--text-2); font-size: 15px; margin-bottom: 8px; }
+.route { display: flex; justify-content: center; gap: 4px; margin: 6px 0 26px; }
+.route span { height: 4px; border-radius: 2px; }
+.menu .hint { color: var(--text-muted); font-size: 13px; margin: -4px 0 4px; }
+.install-tip { margin-top: 18px; padding: 12px 14px; font-size: 14px; color: var(--text-2); text-align: left; }
+.install-tip b { color: var(--text); }
+
+/* --- Шапка экранов --- */
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
+.topbar h2 { margin: 0; font-size: 22px; }
+.chapter-tag { font-size: 12px; font-weight: 800; letter-spacing: .04em; text-align: right; }
+
+/* --- Слоты --- */
+.slot { padding: 16px; margin-bottom: 12px; }
+.slot.current { border-color: var(--accent); }
+.slot h3 { margin: 0 0 4px; font-size: 18px; word-break: break-word; }
+.slot .meta { font-size: 14px; color: var(--text-2); margin-bottom: 10px; }
+.slot .actions { display: flex; gap: 8px; margin-top: 12px; }
+.slot .actions .btn { padding: 11px; font-size: 15px; }
+.backup { display: flex; gap: 8px; margin-top: 18px; }
+.backup .btn { font-size: 14px; padding: 11px; font-weight: 600; }
+
+/* --- Прогресс-бар --- */
+.bar { height: 6px; border-radius: 3px; background: var(--border); overflow: hidden; }
+.bar > i { display: block; height: 100%; width: 0; border-radius: 3px; transition: width .25s ease, background-color .2s; }
+
+/* --- Карта --- */
+.profile h2 { margin: 0; font-size: 20px; word-break: break-word; }
+.unsaved { color: var(--warning); font-size: 12px; font-weight: 700; margin-left: 6px; white-space: nowrap; }
+.stats { font-size: 14px; color: var(--text-2); margin: 6px 0 2px; }
+.stats b { color: var(--text); }
+.bests-title { font-size: 12px; color: var(--text-2); margin: 14px 2px 6px; font-weight: 600; }
+.bests { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 0 0 12px; }
+.bests div { padding: 8px 10px; text-align: center; }
+.bests small { display: block; color: var(--text-2); font-size: 11px; }
+.bests strong { font-size: 20px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 12px; padding: 10px 12px; margin-bottom: 12px; font-size: 12px; font-weight: 700; }
+.grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 7px; }
+@media (min-width: 600px) { .grid { grid-template-columns: repeat(6, 1fr); } }
+.tile {
+  position: relative; overflow: hidden; padding: 9px 4px 8px; text-align: center;
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+  display: flex; flex-direction: column; align-items: center; gap: 2px; min-height: 76px;
+}
+.tile::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: var(--chap); }
+.tile.passed { background: var(--bg-passed); border: 2px solid var(--success); }
+.tile.boss:not(.passed) { border: 2px solid var(--danger); }
+.tile .num { font-size: 17px; font-weight: 800; margin-top: 2px; }
+.tile.boss .num { color: var(--danger); font-size: 13px; }
+.tile .sets { font-size: 11px; font-weight: 700; color: var(--chap); }
+.tile .stars { font-size: 12px; letter-spacing: 1px; color: var(--star-empty); }
+.tile .stars.on { color: var(--warning); }
+
+/* --- Уровень --- */
+.mission { padding: 16px 16px 14px 18px; position: relative; overflow: hidden; margin-bottom: 14px; }
+.mission::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--chap); }
+.mission h2 { margin: 0 0 6px; font-size: 20px; line-height: 1.2; }
+.mission p { margin: 0; color: var(--text-2); font-size: 15px; line-height: 1.4; }
+.mission .best { color: var(--warning); font-weight: 700; font-size: 14px; margin-top: 8px; }
+.howto { color: var(--blue); font-size: 13px; font-weight: 600; margin: 0 2px 10px; }
+.exercise { padding: 14px; margin-bottom: 10px; }
+.exercise .head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.exercise .name { font-size: 17px; font-weight: 700; white-space: nowrap; }
+.exercise .counter { font-size: 13px; font-weight: 700; color: var(--text-2); text-align: right; }
+.exercise input {
+  width: 100%; margin: 10px 0 8px; padding: 13px 14px;
+  font: inherit; font-size: 20px; font-weight: 700; letter-spacing: .02em;
+  color: var(--text); background: var(--bg-card-alt);
+  border: 1.5px solid var(--border); border-radius: 10px; outline: none;
+}
+.exercise input:focus { border-color: var(--blue); }
+.exercise input.invalid { border-color: var(--danger); }
+.exercise input::placeholder { color: var(--text-muted); font-weight: 500; font-size: 16px; }
+.rules { font-size: 13px; color: var(--text-2); line-height: 1.5; margin: 6px 2px 16px; }
+.submit-wrap {
+  position: sticky; bottom: 0; margin: 0 -16px; padding: 12px 16px calc(var(--safe-bottom) + 12px);
+  background: linear-gradient(to top, var(--bg-main) 70%, rgba(18,20,24,0));
+}
+
+/* --- Диалоги --- */
+.overlay {
+  position: fixed; inset: 0; z-index: 10; background: rgba(0,0,0,.6);
+  display: flex; align-items: flex-end; justify-content: center;
+  padding: 16px 12px calc(var(--safe-bottom) + 12px);
+  animation: fade .15s ease;
+}
+@media (min-width: 600px) { .overlay { align-items: center; } }
+.dialog {
+  width: 100%; max-width: 440px; max-height: 90vh; overflow-y: auto;
+  background: var(--bg-main); border: 1px solid var(--border); border-radius: 18px; padding: 20px 18px 16px;
+  animation: rise .2s ease;
+}
+.dialog h3 { margin: 0 0 8px; font-size: 20px; }
+.dialog .text { color: var(--text-2); font-size: 15px; line-height: 1.45; white-space: pre-line; margin-bottom: 16px; }
+.dialog .text .stars-big { display: block; color: var(--warning); font-size: 30px; letter-spacing: 4px; margin: 2px 0 6px; }
+.dialog .buttons { display: flex; flex-direction: column; gap: 8px; }
+.dialog input {
+  width: 100%; padding: 12px 14px; margin-bottom: 14px; font: inherit; font-size: 17px; color: var(--text);
+  background: var(--bg-card); border: 1.5px solid var(--accent); border-radius: 10px; outline: none;
+}
+@keyframes fade { from { opacity: 0; } }
+@keyframes rise { from { transform: translateY(24px); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<main id="app"></main>
+
+<script>
+"use strict";
+
+// --- КОНСТАНТЫ (как в gym_challenge.py) ---
+const LEVEL_COUNT = 30;
+const MAX_STARS_PER_LEVEL = 3;
+const MAX_STARS_TOTAL = LEVEL_COUNT * MAX_STARS_PER_LEVEL;
+const GOAL_REPS = 100;
+const MAX_REPS_PER_SET = 200;
+const MAX_SETS = 20;
+const SLOT_COUNT = 3;
+const SAVES_KEY = "workout100.saves";
+const SESSION_KEY = "workout100.session";
+
+const EXERCISES = [
+  ["pushups", "Отжимания", "например: 35, 25, 20, 20"],
+  ["abs", "Пресс", "например: 40, 30, 30"],
+  ["superman", "Супермен", "например: 30, 25, 25, 20"],
+];
+const EXERCISE_KEYS = EXERCISES.map(e => e[0]);
+
+const C = {
+  blue: "#4F8EF7", cyan: "#32ADE6", warning: "#FFD60A", accent: "#FF6B2B",
+  danger: "#FF453A", success: "#30D158",
+};
+
+const CHAPTERS = [
+  { first: 1, last: 7, name: "Глава 1: Разогрев", legend: "Гл. 1 (1–7): ≤ 5 подходов",
+    target_sets: 5, hint: "5×20", color: C.blue,
+    desc: "Втягиваемся в ритм. Закрой по 100 повторений в каждом упражнении (рекомендуемо до 5 подходов)." },
+  { first: 8, last: 14, name: "Глава 2: Уплотнение", legend: "Гл. 2 (8–14): ≤ 4 подхода",
+    target_sets: 4, hint: "30+25+25+20", color: C.cyan,
+    desc: "Уплотняем нагрузку. Старайся закрыть каждую сотку максимум за 4 подхода." },
+  { first: 15, last: 21, name: "Глава 3: Выносливость", legend: "Гл. 3 (15–21): ≤ 3 подхода",
+    target_sets: 3, hint: "45+30+25", color: C.warning,
+    desc: "Переход к длинным подходам. Цель — закрыть 100 повторений за 3 подхода или меньше." },
+  { first: 22, last: 29, name: "Глава 4: Прорыв", legend: "Гл. 4 (22–29): ≤ 2 подхода",
+    target_sets: 2, hint: "65+35", color: C.accent,
+    desc: "Предфинальный рывок. Закрывай сотку за 2 подхода (первый подход делай близко к максимуму)." },
+  { first: 30, last: 30, name: "ФИНАЛ: БОСС-ФАЙТ", legend: "Ур. 30 (Босс): 1 подход × 100",
+    target_sets: 1, hint: "1×100", color: C.danger,
+    desc: "Решающий уровень! Попытайся сделать 100 повторений (или свой абсолютный максимум) за 1 подход." },
+];
+
+const LEVELS = [];
+for (const ch of CHAPTERS) {
+  for (let day = ch.first; day <= ch.last; day++) {
+    LEVELS.push({ level: day, chapter: ch.name, target_sets: ch.target_sets, hint: ch.hint,
+                  desc: ch.desc, color: ch.color, is_boss: day === LEVEL_COUNT });
+  }
+}
+
+// --- УТИЛИТЫ ---
+const $app = document.getElementById("app");
+
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
+}
+function starsText(n) {
+  n = Math.max(0, Math.min(MAX_STARS_PER_LEVEL, n | 0));
+  return "★".repeat(n) + "☆".repeat(MAX_STARS_PER_LEVEL - n);
+}
+function plural(n, one, few, many) {
+  const m10 = n % 10, m100 = n % 100;
+  if (m10 === 1 && m100 !== 11) return one;
+  if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return few;
+  return many;
+}
+function isInt(v) { return Number.isInteger(v); }
+function progressSummary(progress) {
+  let passed = 0, stars = 0;
+  for (const v of Object.values(progress)) { if (v.passed) passed++; stars += v.stars || 0; }
+  return { passed, stars };
+}
+function haptic() { try { navigator.vibrate && navigator.vibrate(10); } catch (_) {} }
+
+function parseSets(raw) {
+  raw = raw.trim();
+  if (!raw) return { sets: [], error: null };
+  const tokens = raw.split(/[\s,;+]+/).filter(Boolean);
+  const sets = [];
+  for (const t of tokens) {
+    if (!/^\d+$/.test(t)) return { sets: [], error: `«${t.slice(0, 12)}» — не целое число` };
+    if (t.length > 4 || +t > MAX_REPS_PER_SET) return { sets: [], error: `${t.slice(0, 6)} — больше ${MAX_REPS_PER_SET} за подход?` };
+    if (+t === 0) return { sets: [], error: "подход из 0 повторений" };
+    sets.push(+t);
+  }
+  if (sets.length > MAX_SETS) return { sets: [], error: `больше ${MAX_SETS} подходов` };
+  return { sets, error: null };
+}
+
+// --- ПРОВЕРКА ДАННЫХ ---
+function cleanSets(raw) {
+  if (!Array.isArray(raw)) return [];
+  return raw.filter(x => isInt(x) && x > 0 && x <= MAX_REPS_PER_SET).slice(0, MAX_SETS);
+}
+function cleanProgress(raw) {
+  const out = {};
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return out;
+  for (const [k, v] of Object.entries(raw)) {
+    if (!/^\d+$/.test(k) || +k < 1 || +k > LEVEL_COUNT || !v || typeof v !== "object" || Array.isArray(v)) continue;
+    const e = {
+      passed: v.passed === true,
+      stars: isInt(v.stars) ? Math.max(0, Math.min(MAX_STARS_PER_LEVEL, v.stars)) : 0,
+    };
+    for (const key of EXERCISE_KEYS) e[key] = cleanSets(v[key]);
+    if (v.records && typeof v.records === "object") {
+      e.records = {};
+      for (const key of EXERCISE_KEYS) {
+        const r = v.records[key];
+        e.records[key] = isInt(r) && r >= 0 && r <= MAX_REPS_PER_SET ? r : 0;
+      }
+    }
+    out[String(+k)] = e;
+  }
+  return out;
+}
+function cleanSlot(raw, idx) {
+  if (raw === null || raw === undefined) return null;
+  if (typeof raw !== "object" || Array.isArray(raw)) throw new Error("bad slot");
+  const name = typeof raw.name === "string" && raw.name.trim() ? raw.name.slice(0, 40) : `Сохранение ${idx + 1}`;
+  return { name, progress: cleanProgress(raw.progress) };
+}
+function cleanSaves(data) {
+  if (!Array.isArray(data) || data.length !== SLOT_COUNT) throw new Error("bad saves");
+  return data.map(cleanSlot);
+}
+
+// --- ХРАНИЛИЩЕ ---
+function storageGet(key) { try { return localStorage.getItem(key); } catch (_) { return null; } }
+function storageSet(key, value) {
+  try { localStorage.setItem(key, value); return true; } catch (_) { return false; }
+}
+
+function loadSaves() {
+  const raw = storageGet(SAVES_KEY);
+  if (!raw) return Array(SLOT_COUNT).fill(null);
+  try {
+    return cleanSaves(JSON.parse(raw));
+  } catch (_) {
+    // Повреждённые данные не удаляем: откладываем копию
+    storageSet(`${SAVES_KEY}.corrupt-${Date.now()}`, raw);
+    storageSet(SAVES_KEY, JSON.stringify(Array(SLOT_COUNT).fill(null)));
+    toastLater("Сохранения были повреждены. Копия отложена, слоты очищены.");
+    return Array(SLOT_COUNT).fill(null);
+  }
+}
+function writeSaves(saves) {
+  if (!storageSet(SAVES_KEY, JSON.stringify(saves))) {
+    alertDialog("Ошибка сохранения", "Не удалось записать данные на устройство. Возможно, закончилось место.");
+    return false;
+  }
+  return true;
+}
+
+// Текущая кампания живёт в памяти и дублируется в localStorage,
+// чтобы iOS, выгрузив приложение из памяти, не потерял прогресс.
+const state = { currentSlot: null, saveName: "", progress: {}, unsaved: false };
+function persistSession() {
+  storageSet(SESSION_KEY, JSON.stringify(state));
+}
+function restoreSession() {
+  try {
+    const s = JSON.parse(storageGet(SESSION_KEY) || "null");
+    if (!s) return;
+    state.currentSlot = isInt(s.currentSlot) && s.currentSlot >= 0 && s.currentSlot < SLOT_COUNT ? s.currentSlot : null;
+    state.saveName = typeof s.saveName === "string" ? s.saveName.slice(0, 40) : "";
+    state.progress = cleanProgress(s.progress);
+    state.unsaved = s.unsaved === true;
+  } catch (_) { /* пустая сессия */ }
+}
+function setState(patch) { Object.assign(state, patch); persistSession(); }
+
+let pendingToast = null;
+function toastLater(text) { pendingToast = text; }
+
+function getPersonalBests() {
+  const bests = { pushups: 0, abs: 0, superman: 0 };
+  for (const v of Object.values(state.progress)) {
+    const rec = v.records || {};
+    for (const k of EXERCISE_KEYS) {
+      const sets = v[k] || [];
+      bests[k] = Math.max(bests[k], rec[k] || 0, sets.length ? Math.max(...sets) : 0);
+    }
+  }
+  return bests;
+}
+
+// --- ДИАЛОГИ ---
+function dialog({ title, html = "", buttons, input = null, onOpen = null }) {
+  return new Promise(resolve => {
+    const ov = document.createElement("div");
+    ov.className = "overlay";
+    ov.innerHTML = `<div class="dialog" role="dialog" aria-modal="true">
+      <h3>${esc(title)}</h3>
+      ${html ? `<div class="text">${html}</div>` : ""}
+      ${input ? `<input type="text" maxlength="40" enterkeyhint="done" autocomplete="off" value="${esc(input.value)}">` : ""}
+      <div class="buttons"></div></div>`;
+    const box = ov.querySelector(".buttons");
+    const inp = ov.querySelector("input");
+    const close = value => { ov.remove(); resolve(value); };
+    for (const b of buttons) {
+      const el = document.createElement("button");
+      el.className = `btn ${b.cls || ""}`;
+      el.textContent = b.label;
+      el.addEventListener("click", async () => {
+        if (b.check && !(await b.check(inp ? inp.value : null))) return;
+        close({ value: b.value, input: inp ? inp.value : null });
+      });
+      box.appendChild(el);
+    }
+    ov.addEventListener("click", e => { if (e.target === ov) close({ value: null }); });
+    document.body.appendChild(ov);
+    if (onOpen) onOpen(ov, close);
+  });
+}
+function alertDialog(title, text) {
+  return dialog({ title, html: esc(text), buttons: [{ label: "Понятно", cls: "btn-accent", value: true }] });
+}
+async function confirmDialog(title, text, okLabel = "Да", danger = false) {
+  const r = await dialog({ title, html: esc(text), buttons: [
+    { label: okLabel, cls: danger ? "btn-danger" : "btn-accent", value: true },
+    { label: "Отмена", cls: "btn-ghost", value: false },
+  ]});
+  return r.value === true;
+}
+
+// Окно сохранения в слот. Возвращает "saved" | "discard" | null (отмена).
+async function saveDialog(discardLabel) {
+  const saves = loadSaves();
+  const buttons = saves.map((s, i) => {
+    const p = s ? progressSummary(s.progress).passed : 0;
+    const label = `Слот ${i + 1} (${s ? `${s.name} — ${p}/${LEVEL_COUNT}` : "пустой"})${state.currentSlot === i ? " • текущий" : ""}`;
+    return {
+      label, value: `slot${i}`, cls: state.currentSlot === i ? "btn-accent" : "",
+      check: async () => {
+        if (s && i !== state.currentSlot) {
+          return confirmDialog("Перезапись слота", `Слот ${i + 1} занят сохранением «${s.name}». Перезаписать его?`, "Перезаписать", true);
+        }
+        return true;
+      },
+    };
+  });
+  if (discardLabel) buttons.push({ label: discardLabel, cls: "btn-ghost", value: "discard" });
+  buttons.push({ label: "Отмена", cls: "btn-ghost", value: null });
+
+  const r = await dialog({
+    title: "Сохранить прогресс?",
+    html: `Введи название профиля и выбери слот (1–${SLOT_COUNT}):`,
+    input: { value: state.saveName || "Марафон 100×3" },
+    buttons,
+  });
+  if (!r.value) return null;
+  if (r.value === "discard") return "discard";
+
+  const idx = +r.value.slice(4);
+  const name = (r.input || "").trim().slice(0, 40) || `Слот ${idx + 1}`;
+  const fresh = loadSaves();
+  fresh[idx] = { name, progress: state.progress };
+  if (!writeSaves(fresh)) return null;
+  setState({ currentSlot: idx, saveName: name, unsaved: false });
+  return "saved";
+}
+
+// Отменить несохранённые изменения: вернуть состояние слота или очистить кампанию
+function discardChanges() {
+  const saves = loadSaves();
+  if (state.currentSlot !== null && saves[state.currentSlot]) {
+    setState({ progress: saves[state.currentSlot].progress, saveName: saves[state.currentSlot].name, unsaved: false });
+  } else {
+    setState({ currentSlot: null, saveName: "", progress: {}, unsaved: false });
+  }
+}
+
+// --- ЭКРАНЫ ---
+function render(html) {
+  $app.innerHTML = html;
+  window.scrollTo(0, 0);
+  if (pendingToast) { const t = pendingToast; pendingToast = null; alertDialog("Сохранения", t); }
+}
+function on(selector, event, fn) {
+  $app.querySelectorAll(selector).forEach(el => el.addEventListener(event, fn));
+}
+function barHtml(frac, color) {
+  return `<div class="bar"><i style="width:${Math.round(Math.max(0, Math.min(1, frac)) * 100)}%;background:${color}"></i></div>`;
+}
+
+// 1. Главное меню
+function showMainMenu() {
+  const saves = loadSaves();
+  const used = saves.filter(Boolean).length;
+  const hasCampaign = Object.keys(state.progress).length > 0;
+  const route = CHAPTERS.map(ch => `<span style="width:${(ch.last - ch.first + 1) * 9}px;background:${ch.color}"></span>`).join("");
+  const standalone = window.navigator.standalone === true || matchMedia("(display-mode: standalone)").matches;
+
+  render(`<section class="menu">
+    <div class="kicker">100 ОТЖИМАНИЙ • 100 ПРЕСС • 100 СУПЕРМЕН</div>
+    <h1>Путь к сотке за один подход</h1>
+    <div class="sub">30 уровней • 4 главы прогрессии • Финальный Босс</div>
+    <div class="route">${route}</div>
+    ${hasCampaign ? `<button class="btn btn-accent" id="resume">Вернуться к кампании${state.saveName ? ` «${esc(state.saveName)}»` : ""}</button>` : ""}
+    <button class="btn ${hasCampaign ? "" : "btn-accent"}" id="new">Начать новую игру</button>
+    <button class="btn" id="load" ${used ? "" : "disabled"}>Продолжить текущую игру</button>
+    <div class="hint">${used ? `Занято слотов: ${used} из ${SLOT_COUNT}` : "Сохранений пока нет"}</div>
+    ${standalone ? "" : `<div class="card install-tip">Чтобы игра открывалась как приложение: нажми <b>«Поделиться»</b> в Safari → <b>«На экран „Домой“»</b>.</div>`}
+  </section>`);
+
+  on("#resume", "click", showLevelsMap);
+  on("#new", "click", startNewGame);
+  on("#load", "click", showLoadMenu);
+}
+
+async function startNewGame() {
+  if (state.unsaved && Object.keys(state.progress).length &&
+      !(await confirmDialog("Новая игра", "Текущий прогресс не сохранён в слот и будет потерян. Начать новую игру?", "Начать заново", true))) return;
+  setState({ currentSlot: null, saveName: "", progress: {}, unsaved: false });
+  showLevelsMap();
+}
+
+// 2. Меню загрузки
+function showLoadMenu() {
+  const saves = loadSaves();
+  const cards = saves.map((s, i) => {
+    if (!s) return `<div class="card slot"><h3 class="muted">Слот ${i + 1}: Пусто</h3>
+      <div class="meta" style="margin:0;color:var(--text-muted)">Свободная ячейка для нового прохождения</div></div>`;
+    const { passed, stars } = progressSummary(s.progress);
+    const done = passed === LEVEL_COUNT;
+    const cur = i === state.currentSlot;
+    return `<div class="card slot ${cur ? "current" : ""}">
+      <h3>Слот ${i + 1}: ${esc(s.name)}${cur ? ` <span class="unsaved" style="color:var(--accent)">текущий</span>` : ""}</h3>
+      <div class="meta" style="${done ? "color:var(--success)" : ""}">Пройдено: ${passed}/${LEVEL_COUNT} • Звёзды: ${stars}/${MAX_STARS_TOTAL} ★</div>
+      ${barHtml(passed / LEVEL_COUNT, done ? C.success : C.accent)}
+      <div class="actions">
+        <button class="btn btn-accent" data-load="${i}">Загрузить</button>
+        <button class="btn btn-danger" data-del="${i}">Удалить</button>
+      </div></div>`;
+  }).join("");
+
+  render(`<div class="topbar">
+      <button class="btn btn-small" id="back">← Меню</button>
+      <h2>Сохранения</h2><span style="width:70px"></span>
+    </div>
+    ${cards}
+    <div class="backup">
+      <button class="btn" id="export">Резервная копия</button>
+      <button class="btn" id="import">Восстановить</button>
+    </div>
+    <input type="file" id="import-file" accept="application/json,.json" hidden>`);
+
+  on("#back", "click", showMainMenu);
+  on("[data-load]", "click", e => loadSlot(+e.currentTarget.dataset.load));
+  on("[data-del]", "click", e => deleteSlot(+e.currentTarget.dataset.del));
+  on("#export", "click", exportBackup);
+  on("#import", "click", () => $app.querySelector("#import-file").click());
+  on("#import-file", "change", importBackup);
+}
+
+async function loadSlot(idx) {
+  if (state.unsaved && Object.keys(state.progress).length &&
+      !(await confirmDialog("Загрузка", "Текущий прогресс не сохранён и будет заменён. Загрузить сохранение?", "Загрузить", true))) return;
+  const saves = loadSaves();
+  if (!saves[idx]) return;
+  setState({ currentSlot: idx, saveName: saves[idx].name, progress: saves[idx].progress, unsaved: false });
+  showLevelsMap();
+}
+
+async function deleteSlot(idx) {
+  const saves = loadSaves();
+  if (!saves[idx]) return;
+  if (!(await confirmDialog("Удаление", `Удалить сохранение «${saves[idx].name}»?`, "Удалить", true))) return;
+  saves[idx] = null;
+  if (!writeSaves(saves)) return;
+  if (idx === state.currentSlot) {
+    setState({ currentSlot: null, unsaved: Object.keys(state.progress).length > 0 });
+  }
+  showLoadMenu();
+}
+
+async function exportBackup() {
+  const data = JSON.stringify(loadSaves(), null, 2);
+  const fileName = `workout100-backup-${new Date().toISOString().slice(0, 10)}.json`;
+  const file = new File([data], fileName, { type: "application/json" });
+  try {
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({ files: [file], title: "Резервная копия 100×3" });
+      return;
+    }
+  } catch (e) {
+    if (e && e.name === "AbortError") return;
+  }
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(file);
+  a.download = fileName;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+async function importBackup(e) {
+  const file = e.target.files && e.target.files[0];
+  e.target.value = "";
+  if (!file) return;
+  let saves;
+  try {
+    saves = cleanSaves(JSON.parse(await file.text()));
+  } catch (_) {
+    alertDialog("Не получилось", "Это не резервная копия 100×3 или файл повреждён.");
+    return;
+  }
+  if (!(await confirmDialog("Восстановление", "Все три слота будут заменены данными из файла. Продолжить?", "Заменить", true))) return;
+  if (writeSaves(saves)) showLoadMenu();
+}
+
+// 3. Карта уровней
+function showLevelsMap() {
+  const { passed, stars } = progressSummary(state.progress);
+  const bests = getPersonalBests();
+  const done = passed === LEVEL_COUNT;
+  const isUnsaved = state.unsaved || state.currentSlot === null;
+
+  const tiles = LEVELS.map(l => {
+    const st = state.progress[String(l.level)];
+    const ok = !!(st && st.passed);
+    const s = st ? st.stars || 0 : 0;
+    return `<button class="tile ${ok ? "passed" : ""} ${l.is_boss ? "boss" : ""}" style="--chap:${l.color}" data-level="${l.level}"
+        aria-label="Уровень ${l.level}, ${s} из 3 звёзд">
+      <span class="num">${l.is_boss ? "БОСС" : l.level}</span>
+      <span class="sets">≤${l.target_sets}п</span>
+      <span class="stars ${s ? "on" : ""}">${starsText(s)}</span>
+    </button>`;
+  }).join("");
+
+  render(`<div class="topbar profile">
+      <div><h2>${state.saveName ? `Атлет: ${esc(state.saveName)}` : "Новая кампания"}${isUnsaved && Object.keys(state.progress).length ? `<span class="unsaved">● не сохранено</span>` : ""}</h2></div>
+      <button class="btn btn-small" id="menu">${isUnsaved && Object.keys(state.progress).length ? "Сохранить" : "Меню"}</button>
+    </div>
+    <div class="stats">Пройдено: <b>${passed}/${LEVEL_COUNT}</b> • Звёзды: <b>${stars}/${MAX_STARS_TOTAL} ★</b></div>
+    ${barHtml(passed / LEVEL_COUNT, done ? C.success : C.accent)}
+    <div class="bests-title">Рекорд за 1 подход</div>
+    <div class="bests">
+      ${EXERCISES.map(([k, name]) => `<div class="card"><small>${name}</small><strong>${bests[k]}</strong></div>`).join("")}
+    </div>
+    <div class="card legend">${CHAPTERS.map(ch => `<span style="color:${ch.color}">● ${ch.legend}</span>`).join("")}</div>
+    <div class="grid">${tiles}</div>`);
+
+  on("#menu", "click", goToMenuFromMap);
+  on("[data-level]", "click", e => { haptic(); openLevelScreen(LEVELS[+e.currentTarget.dataset.level - 1]); });
+}
+
+async function goToMenuFromMap() {
+  if (state.unsaved && Object.keys(state.progress).length || state.currentSlot === null && Object.keys(state.progress).length) {
+    const r = await saveDialog("В меню без сохранения");
+    if (r === null) return;
+    if (r === "discard") discardChanges();
+  }
+  showMainMenu();
+}
+
+// 4. Экран уровня
+function openLevelScreen(lvl) {
+  const existing = state.progress[String(lvl.level)] || {};
+  const color = lvl.is_boss ? C.danger : lvl.color;
+  const title = lvl.is_boss ? `Уровень ${lvl.level}: ФИНАЛЬНЫЙ БОСС` : `Уровень ${lvl.level} — цель 100×3`;
+  const sub = lvl.is_boss ? "100 повторений за 1 подход" : `Ориентир: ${lvl.hint}`;
+  const rules = lvl.is_boss
+    ? "Ранги босса: ★★★ — по 100 за 1 подход • ★★ — сотка закрыта за несколько подходов • ★ — свой максимум, сотка пока не закрыта"
+    : `Ранги (цель главы ≤ ${lvl.target_sets} подх.): ★★★ — в рамках цели • ★★ — +1 подход • ★ — больше подходов`;
+
+  render(`<div class="topbar">
+      <button class="btn btn-small" id="back">← Карта</button>
+      <div class="chapter-tag" style="color:${color}">${esc(lvl.chapter.toUpperCase())}</div>
+    </div>
+    <div class="card mission" style="--chap:${color}">
+      <h2>${title}</h2>
+      <p><b style="color:var(--text)">${sub}.</b> ${esc(lvl.desc)}</p>
+      ${existing.passed ? `<div class="best">Лучший ранг: ${starsText(existing.stars || 0)}</div>` : ""}
+    </div>
+    <div class="howto">Вводи повторения каждого подхода через запятую или пробел.</div>
+    ${EXERCISES.map(([k, name, ph], i) => `<div class="card exercise">
+      <div class="head"><span class="name">${i + 1}. ${name}</span><span class="counter" id="cnt-${k}"></span></div>
+      <input id="in-${k}" data-key="${k}" type="text" inputmode="decimal" enterkeyhint="${i < 2 ? "next" : "done"}"
+        autocomplete="off" autocorrect="off" spellcheck="false" placeholder="${ph}"
+        value="${(existing[k] || []).join(", ")}">
+      ${barHtml(0, C.warning).replace('class="bar"', `class="bar" id="bar-${k}"`)}
+    </div>`).join("")}
+    <div class="rules">${rules}</div>
+    <div class="submit-wrap"><button class="btn btn-success" id="submit">Зафиксировать результат ✓</button></div>`);
+
+  on("#back", "click", showLevelsMap);
+  on("#submit", "click", () => submitLevelResult(lvl));
+  on("input[data-key]", "input", e => updateLiveCounter(e.target.dataset.key));
+  on("input[data-key]", "keydown", e => {
+    if (e.key !== "Enter") return;
+    e.preventDefault();
+    const idx = EXERCISE_KEYS.indexOf(e.target.dataset.key);
+    if (idx < EXERCISE_KEYS.length - 1) $app.querySelector(`#in-${EXERCISE_KEYS[idx + 1]}`).focus();
+    else { e.target.blur(); submitLevelResult(lvl); }
+  });
+  EXERCISE_KEYS.forEach(updateLiveCounter);
+}
+
+function updateLiveCounter(key) {
+  const input = $app.querySelector(`#in-${key}`);
+  const cnt = $app.querySelector(`#cnt-${key}`);
+  const bar = $app.querySelector(`#bar-${key} > i`);
+  const { sets, error } = parseSets(input.value);
+  input.classList.toggle("invalid", !!error);
+  if (error) {
+    cnt.textContent = `Ошибка: ${error}`; cnt.style.color = C.danger;
+    bar.style.width = "0%"; return;
+  }
+  const total = sets.reduce((a, b) => a + b, 0);
+  const n = sets.length;
+  cnt.textContent = `${total} / ${GOAL_REPS} · ${n} подх.${total >= GOAL_REPS ? " ✓" : ""}`;
+  cnt.style.color = total >= GOAL_REPS ? C.success : total > 0 ? C.warning : "";
+  bar.style.width = `${Math.min(100, total / GOAL_REPS * 100)}%`;
+  bar.style.background = total >= GOAL_REPS ? C.success : C.warning;
+}
+
+async function submitLevelResult(lvl) {
+  const all = {};
+  for (const [k, name] of EXERCISES) {
+    const input = $app.querySelector(`#in-${k}`);
+    const { sets, error } = parseSets(input.value);
+    if (error) { await alertDialog("Ошибка ввода", `${name}: ${error}.\nИсправь значение и попробуй снова.`); input.focus(); return; }
+    if (!sets.length) { await alertDialog("Не заполнено", "Введи подходы для всех трёх упражнений!"); input.focus(); return; }
+    all[k] = sets;
+  }
+  const sum = a => a.reduce((x, y) => x + y, 0);
+  const names = Object.fromEntries(EXERCISES.map(([k, n]) => [k, n]));
+  const sums = Object.fromEntries(EXERCISE_KEYS.map(k => [k, sum(all[k])]));
+  const notDone = EXERCISE_KEYS.filter(k => sums[k] < GOAL_REPS);
+
+  // На финальном уровне можно закрыть уровень с личным максимумом
+  if (notDone.length && !lvl.is_boss) {
+    await alertDialog("Сотка ещё не закрыта",
+      `Чтобы пройти уровень, нужно набрать минимум ${GOAL_REPS} повторений в каждом упражнении.\nНе хватает: ` +
+      notDone.map(k => `${names[k]} (${sums[k]}/${GOAL_REPS})`).join(", "));
+    return;
+  }
+
+  const maxSets = Math.max(...EXERCISE_KEYS.map(k => all[k].length));
+  const minSum = Math.min(...Object.values(sums));
+  let stars;
+  if (lvl.is_boss) stars = minSum >= GOAL_REPS && maxSets === 1 ? 3 : minSum >= GOAL_REPS ? 2 : 1;
+  else stars = maxSets <= lvl.target_sets ? 3 : maxSets === lvl.target_sets + 1 ? 2 : 1;
+
+  const key = String(lvl.level);
+  const prev = state.progress[key];
+  const prevStars = prev ? prev.stars || 0 : 0;
+
+  // Рекорд одиночного подхода не уменьшается
+  const records = {};
+  for (const k of EXERCISE_KEYS) {
+    let prevBest = 0;
+    if (prev) {
+      const ps = prev[k] || [];
+      prevBest = Math.max((prev.records || {})[k] || 0, ps.length ? Math.max(...ps) : 0);
+    }
+    records[k] = Math.max(prevBest, Math.max(...all[k]));
+  }
+
+  const keptPrevious = !!prev && prevStars > stars;
+  const entry = keptPrevious ? { ...prev, records } : { passed: true, stars, ...all, records };
+  setState({ progress: { ...state.progress, [key]: entry }, unsaved: true });
+  haptic();
+
+  let html = `<span class="stars-big">${starsText(stars)}</span>`;
+  if (keptPrevious) html += `Сохранён лучший результат уровня: ${starsText(prevStars)}\n\n`;
+  html += EXERCISES.map(([k, name]) =>
+    `${name}: ${sums[k]} (${all[k].length} ${plural(all[k].length, "подход", "подхода", "подходов")}, макс. ${Math.max(...all[k])})`).join("\n");
+  await dialog({ title: `Уровень ${lvl.level} пройден!`, html, buttons: [{ label: "К карте уровней", cls: "btn-accent", value: true }] });
+  showLevelsMap();
+}
+
+// --- СТАРТ ---
+restoreSession();
+showMainMenu();
+
+if ("serviceWorker" in navigator && location.protocol !== "file:") {
+  navigator.serviceWorker.register("sw.js").catch(() => {});
+}
+if (navigator.storage && navigator.storage.persist) {
+  navigator.storage.persist().catch(() => {});
+}
+</script>
+</body>
+</html>
